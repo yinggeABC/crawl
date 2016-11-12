@@ -1,0 +1,39 @@
+extends layout
+
+block content
+  .container
+      .row
+          .col-md-8
+              div#data-container
+              div#pagination-container
+           .col-md-4
+               ul.list-group
+                  each category,index in categories
+                      li.list-group-item
+                          a(href="/article?cid="+category.id) #{category.name}
+
+  script.
+      var art = !{JSON.stringify(articles)};//jade模版要在script中使用render传进来的参数，如果该参数是数组，就要想stringify为字符串，再用!{}取出数组
+      var opts = {
+          dataSource:art,
+          pageSize:18,
+          autoHidePrevious:true,
+          autoHideNext:true,
+          showGoInput:true,
+          showGoButton:true,
+          goButtonText:"跳转到",
+          callback:function(data,pagination){
+              var html = template(data);
+              $("#data-container").html(html);
+          }
+      }
+      $("#pagination-container").pagination(opts);
+
+      function template(data){
+          var html = "<ul class='list-group'>";
+          $.each(data,function(index,item){
+              html=html+"<li class='list-group-item'><a href='"+item.url+"'>"+item.name+"</a></li>";
+          });
+          html+="</ul>";
+          return html;
+      }
